@@ -1,10 +1,14 @@
 #import sunpy.data.sample
 
-import cv2
+import cv2 as cv
 import sunpy.map
 
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
 import numpy as np
+
+import time
 
 from scipy.optimize import curve_fit
 
@@ -41,6 +45,40 @@ def get_sun_thresh(data,debug=0):
     
     return bw_thresh
 
+def find_ssn(bw):
+     
+     #normalize
+     bw = bw/np.max(bw)
+     
+     grow = np.zeros(np.shape(bw))
+     grow_old = grow+3;
+
+     strel = np.ones([3,3])
+     # strel[0,[0,2]]=0
+     # strel[2,[0,2]]=0
+     # strel = [[0,1,0],[1,1,1],[0,1,0]]
+     n = 0
+ 
+     while np.sum(bw)!= 0 :
+     # for n in range(0,2):
+         active_indx = np.nonzero(bw)
+         # print("seed:",active_indx[0][0],active_indx[1][0])
+         grow[active_indx[0][0],active_indx[1][0]] = 1
+         i = 1
+         while np.sum(grow_old-grow)!=0:
+         # for i in range(0,50):
+         #seed pixel
+             grow_old = grow
+             grow = grow + ((bw + cv.dilate(grow,strel)) == 2)*1.0
+
+             i = i + 1
+         n = n + 1       
+         #export stats
+         
+         # print("n:{} sz:{}".format(n,np.sum(grow)))
+         bw = bw-grow>0
+     
+     return n
 
 
 image_name = './data/test.fits'
@@ -50,25 +88,46 @@ image_name = './data/test.fits'
 
 if __name__=='__main__':
     
-    hmi = sunpy.map.Map(image_name)
+    # hmi = sunpy.map.Map(image_name)
  
-    # # plotting the data - map/grid
-    # hmi.plot()
-    # hmi.draw_limb()
-    # hmi.draw_grid()
+    # # # plotting the data - map/grid
+    # # hmi.plot()
+    # # hmi.draw_limb()
+    # # hmi.draw_grid()
     
-    print(hmi.reference_pixel)
+    # print(hmi.reference_pixel)
     
-    data = hmi.data
-    # plt.imshow(hmi.data)
-    # plt.plot(hmi.reference_pixel,'or')
+    # data = hmi.data
+    # # plt.imshow(hmi.data)
+    # # plt.plot(hmi.reference_pixel,'or')
     
-    bw_thresh = get_sun_thresh(data);
+    # bw_thresh = get_sun_thresh(data,1);
     
-    bw_img = data<bw_thresh;
+    # bw_img = data<bw_thresh;
     
-    plt.figure(2)
-    plt.imshow(bw_img)
+    img = cv.imread('spot_smpl.png');
+    bw = img[:,:,1]
+    plt.imshow(bw)
+    
+    ssn = find_ssn(bw)
+    print(ssn)
+    
+   
+        # plt.colorbar()
+        
+        # bw = bw - grow/np.max(grow)
+    
+        
+        
+        # break;
+    
+    #dialate
+    
+    
+    
+    # plt.figure(2)
+    
+
     
     
     
