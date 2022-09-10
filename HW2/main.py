@@ -6,9 +6,12 @@ import sunpy.map
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
+import glob as glob
+
 import numpy as np
 
 import time
+
 
 from scipy.optimize import curve_fit
 
@@ -40,12 +43,15 @@ def get_sun_thresh(data,debug=0):
     bw_thresh = popt[1]-1.5*popt[2];
     
     if debug:
+        plt.figure(2)
         plt.plot(indx[1:],np.log(freq),'o')
         plt.plot([bw_thresh,bw_thresh],[0,a0])
     
     return bw_thresh
 
-def find_ssn(bw):
+
+
+def find_ssn_ahe(bw):
      
      #normalize
      bw = bw/np.max(bw)
@@ -75,62 +81,109 @@ def find_ssn(bw):
          n = n + 1       
          #export stats
          
-         # print("n:{} sz:{}".format(n,np.sum(grow)))
+         print("n:{} sz:{}".format(n,np.sum(grow)))
          bw = bw-grow>0
      
      return n
 
+# based on my work from the flake detection
+# https://github.com/hasithperera/cenlab-tools/blob/main/src/flake_filter.py
 
-image_name = './data/test.fits'
+def find_ssn(data):
+    ''' Using opencv to find spots'''
+    
+    data = data.astype(np.uint8);
+    strel = np.ones([3,3]);
+    
+    
+    blobs, hierarchy = cv.findContours(data, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
+    
+    return blobs
 
+def get_blob_details(blob,size=5):
+
+    true_size = len(blob)
+        # print(i,"size:",len(blob))
+    x = []
+    y = []
+    if len(blob)>size:
+        
+        
+        for p in blob:
+            if p!=np.nan:
+                print(p)
+                val = p
+                print('valiid')
+                x.append(p[0][0])
+                y.append(p[0][1])
+    
+        center_x = np.min(x)
+        center_y = np.min(y)
+        height = max(x) - min(x)
+        width = max(y) - min(y)
+        return [true_size,center_x, center_y,height,width,true_size]
+    else:
+        return []
+    
+    
+# not currently working
+# WPI: need to figure out a better way to get the blob stats anc centers out 
+# handel NAN values 
+
+def label_spots(blobs):
+    for blob in blobs:
+        blob_stats = get_blob_details(blob,5)
+        if (len(blob_stats)>0):
+            # ROI.append(blob_stats)
+            rect = patches.Rectangle((blob_stats[1], blob_stats[2]), blob_stats[3], blob_stats[4], linewidth=2, edgecolor='r', facecolor='none')
+            ax.add_patch(rect)
+
+    
+    
+def process_file(hmi):
+    '''find ssn and return the number'''
+    bw_thresh = get_sun_thresh(hmi.data);
+    
+    bw_img = hmi.data<bw_thresh;
+    
+    strel = np.array([[0,1,0],[1,1,1],[0,1,0]]).astype(np.uint8)
+
+    bw_img = cv.morphologyEx(bw_img.astype(np.uint8),cv.MORPH_ERODE,strel)   
+    blobs = find_ssn(bw_img)
+    ssn = len(blobs)
+    
+    return ssn
+
+
+# image_name = './data/test.fits'
+
+# #active sun - 2014 image
+# image_name ='./data/hmi.Ic_noLimbDark_720s.20140321_000000_TAI.1.continuum.fits'
+
+#inactive sun- 2020 image
+image_name ='./data/hmi.Ic_noLimbDark_720s.20200418_000000_TAI.3.continuum.fits'
 
 
 
 if __name__=='__main__':
     
-    # hmi = sunpy.map.Map(image_name)
- 
+    err = 0
+    with open('out.dat','a+') as fp:
+        for image_name in glob.glob('./data/*.fits'):
+            hmi = sunpy.map.Map(image_name)
+            try:
+                
+                ssn = process_file(hmi)
+                print(image_name)
+                fp.write("{},{}\n".format(hmi.date.value,ssn))
+            except:
+                err = err + 1
+                continue
+    print(err)
     # # # plotting the data - map/grid
     # # hmi.plot()
     # # hmi.draw_limb()
     # # hmi.draw_grid()
     
-    # print(hmi.reference_pixel)
-    
-    # data = hmi.data
-    # # plt.imshow(hmi.data)
-    # # plt.plot(hmi.reference_pixel,'or')
-    
-    # bw_thresh = get_sun_thresh(data,1);
-    
-    # bw_img = data<bw_thresh;
-    
-    img = cv.imread('spot_smpl.png');
-    bw = img[:,:,1]
-    plt.imshow(bw)
-    
-    ssn = find_ssn(bw)
-    print(ssn)
-    
-   
-        # plt.colorbar()
-        
-        # bw = bw - grow/np.max(grow)
-    
-        
-        
-        # break;
-    
-    #dialate
-    
-    
-    
-    # plt.figure(2)
-    
 
-    
-    
-    
-    
-    
     
