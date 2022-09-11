@@ -142,7 +142,7 @@ def label_spots(blobs):
     
 def process_file(hmi):
     '''find ssn and return the number'''
-    bw_thresh = get_sun_thresh(hmi.data);
+    bw_thresh = .91#get_sun_thresh(hmi.data);
     
     bw_img = hmi.data<bw_thresh;
     
@@ -152,7 +152,7 @@ def process_file(hmi):
     blobs = find_ssn(bw_img)
     ssn = len(blobs)
     
-    return ssn
+    return [ssn,bw_thresh]
 
 
 # image_name = './data/test.fits'
@@ -168,14 +168,19 @@ image_name ='./data/hmi.Ic_noLimbDark_720s.20200418_000000_TAI.3.continuum.fits'
 if __name__=='__main__':
     
     err = 0
-    with open('out.dat','a+') as fp:
-        for image_name in glob.glob('./data/*.fits'):
+    i = 0 
+    files = glob.glob('./data/*.fits')
+    files.sort()
+    with open('out_91_thresh.dat','a+') as fp:
+        for image_name in files:
             hmi = sunpy.map.Map(image_name)
+            i = i + 1
+            print(i)
             try:
                 
-                ssn = process_file(hmi)
+                info = process_file(hmi)
                 print(image_name)
-                fp.write("{},{}\n".format(hmi.date.value,ssn))
+                fp.write("{},{},{}\n".format(hmi.date.value,info[0],info[1]))
             except:
                 err = err + 1
                 continue
