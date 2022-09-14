@@ -55,11 +55,13 @@ def find_ssn_ahe(bw):
      
      #normalize
      bw = bw/np.max(bw)
+     id_img = np.zeros(np.shape(bw))
      
      grow = np.zeros(np.shape(bw))
      grow_old = grow+3;
 
      strel = np.ones([3,3])
+     # strel = np.array([[0,1,0],[1,1,1],[0,1,0]]).astype(np.uint8)
      # strel[0,[0,2]]=0
      # strel[2,[0,2]]=0
      # strel = [[0,1,0],[1,1,1],[0,1,0]]
@@ -81,10 +83,13 @@ def find_ssn_ahe(bw):
          n = n + 1       
          #export stats
          
-         print("n:{} sz:{}".format(n,np.sum(grow)))
+         
          bw = bw-grow>0
+         id_img = id_img + (grow>0)*1.0;
+         print("n:{} sz:{} mx:{}".format(n,np.sum(grow),np.max(id_img)))
+         
      
-     return n
+     return n,id_img
 
 # based on my work from the flake detection
 # https://github.com/hasithperera/cenlab-tools/blob/main/src/flake_filter.py
