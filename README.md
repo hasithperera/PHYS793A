@@ -1,10 +1,8 @@
-# PHYS 793 A - Space Physics Fall 22- Dr. Katy Goodrich
+# PHYS 793 A - Space Physics (Fall 22) 
 
-## HW - 2
+Indtructor : Dr. Katy Goodrich
 
-This assignment was about SDO data processing.A scanned copy of hw2 [here](docs/hw2.pdf)
-
-My final [report](docs/hw2_ahe.pdf).
-
-
-## HW - 3 
+Title | info | Due date
+--- | --- | --- 
+HW1 | Written homework
+[HW2](./HW2/README.md) | SDO basic data processing | 09/15
