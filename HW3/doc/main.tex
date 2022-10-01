@@ -1,0 +1,296 @@
+\documentclass[letterpaper,skipsamekey,12pt,english]{article}
+
+
+\RequirePackage[letter,hmargin=2.25cm,vmargin=1cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+%\usepackage{enumerate}
+\usepackage{hyperref}
+\usepackage{tabularx}
+
+\usepackage{setspace}
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{datetime}
+
+%include src files
+\usepackage{listings}
+\usepackage{xcolor}
+
+
+\usepackage{biblatex}
+\usepackage{gensymb}
+
+\addbibresource{HW3.bib}
+
+%used for inline code segments
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{.98,.98,.98}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+\usepackage{float}
+\usepackage{svg}
+\usepackage{subcaption}
+
+\usepackage{listings}
+
+\geometry{left=2.5cm,right=2cm,top=2.5cm,bottom=2.5cm}
+
+\pagestyle{fancy}
+\fancyhf{}
+%\rhead{Hasith Perera}
+\lhead{PHYS 793A - Homework}
+\rfoot{\thepage \ of \ \pageref{LastPage} }
+
+
+\title{HW3 -Simulating the Parker Spiral }
+\author{Hasith Perera}
+\date{September 2022}
+
+
+
+\begin{document}
+
+\maketitle
+\thispagestyle{fancy}
+%\fancyhf{}
+
+\section{Magnetic field dependence}
+
+To look at the magnetic field components the following equations were used where $r$,$\theta$,$\phi$ are taken as the observation point where the field is calculated. $\omega = 2\pi/(27\times24\times3600) s^{-1}$ is taken as the solar rotation rate, $v = 400 kmh^{-1}$ is considered to be the solar wind speed on the surface and $R_0$,$B_0$ are taken as the solar radius and the magnetic field on the solar surface
+
+\begin{equation}
+\label{eq:br}
+    B_R = \pm B_0\left(\frac{R_0}{r}\right)^2
+\end{equation}
+\begin{equation}
+    B_{\theta} = 0
+\end{equation}
+\begin{equation}
+\label{eq:b_phi}
+    B_{\phi} = - \left(\frac{R_0 \omega}{v}\right) B_R (r/R_0) \sin(\theta)
+\end{equation}
+
+Figure \ref{fig:br_r} show the variation of $|B_R|$ with respect to $r$. To generate this plot equation \ref{eq:br} was used and $r$ was changed from $R_0$ to 1.5 AU while keeping all the other variables constant. The variables $\theta$,$\phi$ dose not show up in the expression making $B_R$ independent of these variables  (Line 15 - 27)
+
+\begin{itemize}[noitemsep]
+    \item $B_0$ has a linear relationship with $B_R$: Increasing will increase $B_R$ and decreasing will decrease $B_R$
+    \item $\omega$,$v$ :  $B_R$ is independent of these variable
+\end{itemize}
+
+Figure \ref{fig:B_phi_r} show the variation of $|B_\phi|$  with respect to $r$. The same initial conditions were used to generate the corresponding plots. Equation \ref{eq:b_phi} was used to calculate the values.(Line 48) In generating the $\theta$ dependence shown in figure \ref{fig:B_phi_theta} $r$ was held constant at 1 AU while changing $\theta$ from 0 to $2\pi$ (Line 61 - 69)
+
+\textit{Note: For plotting purposes the absolute value is taken for easier representation.  $B_\phi$ will have the opposite sign to $B_R$}
+
+\begin{itemize}[noitemsep]
+    \item $B_0$: Proportional. Increase will increase $B_\phi$ while a decrease will decrease the value
+    \item $\omega$:Proportional. Increase will increase $B_\phi$ while a decrease will decrease the value
+    \item $v$: Inversely proportional. An increase in $v$ will decrease $B_\phi$
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[height=5cm]{images/Br_r.png}
+    \caption{$|B_r|$ vs $r$. The dotted line indicate a distance of 1 AU for reference}
+    \label{fig:br_r}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[height=5cm]{images/Bphi_r.png}
+    \caption{Variation of $|B_\phi|$vs $r$}
+    \label{fig:B_phi_r}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[height=5cm]{images/B_phi_theta.png}
+    \caption{Variation of $B_\phi$ vs $\theta$ at 1 AU}
+    \label{fig:B_phi_theta}
+\end{figure}
+
+\lstinputlisting[language=Python]{code/Q1.py}
+ 
+\break
+
+\section{Visualizing the equatorial plane}
+
+\begin{equation}
+    \label{eq:parker spiral}
+    (r-R_s) = - \frac{v}{\omega sin\theta}(\phi - \phi_0)
+\end{equation} 
+
+To look at the magnetic field lines in the equatorial plane using $\theta = \pi/2$ for equation \ref{eq:parker spiral} we can reduce it to,
+
+\begin{equation}
+ \label{eq:xy_ps}
+\phi = (r - R_s)\frac{\omega}{v} + \phi_0
+\end{equation}
+
+Using equation \ref{eq:xy_ps} and setting $\phi_0$ to a fix value we can fix the location where the solar wind is ejected. To visualize the path $r$ is varied from $R_0$ to 2 AU (line 22) and the corresponding $\phi$ values were found which are satisfied by the spiral.(line 29) The calculated values of $r$,$\phi$ were then converted in to Cartesian coordinates using equation \ref{eq:sperical to cart} for plotting (line 32)
+
+\begin{equation}
+    \label{eq:sperical to cart}
+    x= r \cos \phi , y = r \sin \phi
+\end{equation}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=6cm]{images/xy.png}
+    \caption{Parker spiral as seen on the ecliptic plane.  The Dotted line indicate a circle at 1 AU}
+    \label{fig:Paker_sp}
+    
+\end{figure}
+
+To compare the effects of $B_0$,$\omega$,$V$ plots shown in figure \ref{fig:wv_change} was generated. By changing the initial conditions give
+
+\begin{itemize}[noitemsep]
+    \item Since $B_0$ is not in equation \ref{eq:parker spiral} there will be no effect on $B_0$ to the spiral shape
+    \item $\omega$: Higher the $\omega$ (in days using the convention set by the problem) the less wrapping of the field lines would be visible as shown in \ref{eq:parker spiral}
+    \item $v$: Higher the $v$ the less wrapping of the field lines would be visible as shown in \ref{eq:parker spiral}
+\end{itemize}
+ 
+\textit{Note: It is not expected to see the same variation for $\omega$ and $v$ based on equation \ref{eq:parker spiral}.The convention set in the problem measuring $\omega$ in units of time was identified as the cause of this. It can be resolved easily by recalling that $\omega = 2\pi/t$}
+
+\break
+
+
+
+\begin{figure}[h]
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth]{images/v_spiral.png} 
+\caption{}
+\label{fig:subim1}
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth]{images/w_spiral.png}
+\caption{}
+\label{fig:subim2}
+\end{subfigure}
+
+\caption{Comparison of spirals with different initial conditions. (a) change due to $v$ 
+     (b) change due to $\omega$}
+ \label{fig:wv_change}
+\end{figure}
+
+
+\lstinputlisting[language=Python]{code/Q2.py}
+\hspace{1cm}
+
+\break
+
+\section{Visualizing the Polar field}
+
+To look at the polar field $\phi_0$ was fixed at $0$ and $\theta$ was set to a fixed value. (This selects the solar longitude of the ejection point and can be varied to get different spirals. line 28) For each set longitude, $\phi$ was varied from 0 to $10 \pi$ and $r$  was calculated which satisfied equation \ref{eq:parker spiral}(line 34). Each $(r,\theta,\pi)$ coordinates describing the spiral was plotted after a Cartesian conversion in 2D (xz plane) as well as in a 3D axis as shown in figure \ref{fig:polar_view}
+
+\begin{figure}[h]
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth]{images/polar_xz.png} 
+\caption{}
+
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.9\linewidth]{images/polar_3d.png}
+\caption{}
+
+\end{subfigure}
+
+\caption{Polar field (a) xy projection of the polar field 
+     (b) 3D view of the spirals }
+ \label{fig:polar_view}
+\end{figure}
+
+\lstinputlisting[language=python]{code/Q3.py}
+
+\section{Predicting observations}
+
+Based on the initial conditions provided in question one the predicted observations at 1 Au is,
+\begin{itemize}
+    \item $B_r$ = 70.02 nT
+    \item $B_\phi$ = -67.89 nT
+\end{itemize}
+The radial component ($B_r$) dominates based on the predictions.
+
+\section{Compare with observations}
+
+ACE solar wind monitor data was used to look at how well the model predicted the observations.\cite{noauthor_ace_nodate}  The initial parameters were not a good match for the observed values. They were modified to match the calculated $ \frac{B_phi}{B_r} $ value based on observations. An increased $v $ = 800 $km^{-1}$ and $B $ = 3 Gauss produced the following results shown in figure \ref{fig:ACE_observations}
+
+Even though they show good agreement the need for the increased speed and the decreased magnetic filed is concerning given that observation from the space craft give the solar wind speed around 500 - 600 kms$^{-1}$ during the same time period. The observations also show a high variability during a 7 day period which will not be accounted by the current model.
+
+\textbf{Note}: I was unable verify the significance of the long. and lat. values given along side each observation.
+
+In order to convert the predictions from a Sun centred spherical coordinate system, to a Sun centered Cartesian coordinates the unit vectors $\hat{r}$,$\hat{\theta}$,$\hat{\phi}$ we transformed using the following equations\cite{weisstein_spherical_nodate},
+
+\begin{equation}
+    \hat{r} = \left[ \begin{array}{c}
+          \cos \theta \sin \phi\\
+          \sin \theta \sin \phi \\
+          \cos \phi
+    \end{array}\right]
+\end{equation}
+
+\begin{equation}
+    \hat{\theta} = \left[ \begin{array}{c}
+          -\sin \theta \\
+          \cos \theta  \\
+          0
+    \end{array}\right]
+\end{equation}
+
+\begin{equation}
+    \hat{r} = \left[ \begin{array}{c}
+          \cos \theta \cos \phi\\
+          \sin \theta \cos \phi \\
+          - \sin \phi
+    \end{array}\right]
+\end{equation}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{images/field_observations.png}
+    \caption{Observations from 1 min averaged data on 10/01/2022 from ACE solar wind monitor. The dotted lines show the predicted observations based $v$ =  800 $km^{-1}$ and $B$= 3 Gauss}
+    \label{fig:ACE_observations}
+\end{figure}
+
+\lstinputlisting[language=python]{code/Q5.py}
+
+\printbibliography
+ 
+ \section{Appendix}
+ 
+ 
+ 
+ \begin{figure}[h]
+     \centering
+     \includegraphics[width=.7\textwidth]{images/appendix.png}
+     \caption{Motivation behind the coordinate transformation used in question 5}
+     %\label{fig:my_label}
+ \end{figure}
+\end{document}

@@ -14,15 +14,9 @@ import matplotlib.pyplot as plt
 
 B_0 = 3e-3 #T
 Rs = 6.957e8/(8*60*3e8) #solar radius in au
-
 v = 400e3/(8*60*3e8) #ms-1
-phi_0 = 0
-
 w_days = 27
 w = 2*np.pi/(w_days*24*3600)  #hz
-long = np.pi /2  #ecliptic plane
-
-
 beta = Rs*w/v
 theta = np.pi/2 #ecliptic plane
 
