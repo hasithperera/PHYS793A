@@ -1,0 +1,16 @@
+  FORMAT OF THE SUBSETTED FILE
+    
+    ITEMS                      FORMAT   
+     
+ 1 YEAR                          I4        
+ 2 DOY                           I4        
+ 3 Hour                          I3        
+ 4 Scalar B, nT                  F6.1      
+ 5 Vector B Magnitude,nT         F6.1      
+ 6 Lat. Angle of B (GSE)         F6.1      
+ 7 Long. Angle of B (GSE)        F6.1      
+ 8 BX, nT (GSE, GSM)             F6.1      
+ 9 BY, nT (GSE)                  F6.1      
+10 BZ, nT (GSE)                  F6.1      
+11 RMS_magnitude, nT             F6.1      
+12 Magnetosonic Much num.        F5.1      
