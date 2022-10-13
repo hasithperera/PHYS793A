@@ -11,6 +11,7 @@ import numpy as np
 ## initial conditions 
 
 R_E = 6.372e6 #m
+# R_E = 1
 
 r_0 = np.matrix([[3.4*R_E],[.3*R_E],[0]])
 epsilon = 1.02
@@ -20,25 +21,25 @@ L = 22.3 * R_E
 
 # MMS observation - location
 
-# Shock 1
-x_gse = 9.466 * R_E
-y_gse = 6.1 * R_E
-z_gse = -5.64 * R_E
+# # Shock 1
+# x_gse = 9.34 * R_E
+# y_gse = 6.10 * R_E
+# z_gse = -5.65 * R_E
 
-# Shock 1 : IMF
-bx = .3
-by = -.3
-bz = 3.9
+# # Shock 1 : IMF
+# bx = .3
+# by = -.3
+# bz = 3.9
 
-# # Shock 2
-# x_gse =  * R_E
-# y_gse =   * R_E
-# z_gse =   * R_E
+# Shock 2
+x_gse = 8.9 * R_E
+y_gse =  11.5 * R_E
+z_gse =  -5.4  * R_E
 
-# # Shock 2 : IMF
-# bx = -3.3
-# by = -2.9
-# bz = 0.1
+# Shock 2 : IMF
+bx = -3.3
+by = -2.9
+bz = 0.1
 
 # # Shock 3
 # x_gse = 12.7 * R_E
@@ -69,17 +70,27 @@ def Grad_S(r_abd,alpha,epsilon,L):
                        [-(r_abd[0,0]*(1-epsilon**2)+epsilon*L)*np.sin(alpha)+r_abd[1,0]*np.cos(alpha)],
                        [r_abd[2,0]] ])
     
-    return 2*L*calc/r_abd
+    return 2*L*calc/np.linalg.norm(r_abd)
 
 
 r_abd = GSE_to_abd(r,alpha,r_0)
 G_s = Grad_S(r_abd,alpha,epsilon,L)
 
 #  finding the unit normal vector for the shock surface
-n_hat = G_s/np.linalg.norm(G_s) 
+n_hat = np.array(G_s/np.linalg.norm(G_s)) 
+b_hat = np.array( B/np.linalg.norm(B))
 
-n_dot_B = np.vdot(n_hat,B/np.linalg.norm(B))
+n_dot_b = np.vdot(n_hat,b_hat)
 
-shock_angle = np.arccos(n_dot_B)
+print("n_hat",n_hat)
+# print(b_hat)
+shock_angle = np.rad2deg(np.arccos(n_dot_b))
 
-print("Shock Angle:{:4.4}".format(np.rad2deg(shock_angle[0,0])))
+
+if shock_angle > 90:
+    #if n should be -n
+    shock_angle = 180 - shock_angle
+    print("n should be -n")
+
+
+print("Shock Angle:",shock_angle)

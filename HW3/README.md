@@ -9,5 +9,7 @@ Using equation 5.13 the spiral was generated. Different projections were looked 
 - [x] plotting ACE data
 - [ ] long,lat in the ACE data file couldn't find what it is.
 
-[report on overleaf](https://www.overleaf.com/project/633196ddf173521e9b7eb474)
-[public report](NA)
+## External links
+
+- [PDF report](https://drive.google.com/file/d/1z05IAHeLPe0aKKAbqYBrr5jceaatXsuB/view?usp=sharing)
+- [Doc]()
