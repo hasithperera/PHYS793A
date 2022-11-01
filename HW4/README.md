@@ -9,7 +9,7 @@
 - [ ] Tried a python library for [mms data](https://github.com/spedas/mms-examples) to get the data. It failed execution
 - [ ] Drawing the shock surface using the model
 
-## External references
+## External links
 
-- [doc](https://drive.google.com/file/d/1nun1VGs0hBe_tRqn4odsu-XGNYROa70m/view?usp=sharing)
+- [HW_doc](https://drive.google.com/file/d/1nun1VGs0hBe_tRqn4odsu-XGNYROa70m/view?usp=sharing)
 - [final pdf](https://drive.google.com/file/d/1zPiaWCgUKc6ZCCMZhSbY9KlB_WZ67r8A/view?usp=sharing)

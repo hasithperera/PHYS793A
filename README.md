@@ -1,6 +1,6 @@
 # PHYS 793 A - Space Physics (Fall 22) 
 
-Indtructor : Dr. Katy Goodrich
+Instructor : Dr. Katy Goodrich
 
 Title | info | Due date
 --- | --- | --- 
